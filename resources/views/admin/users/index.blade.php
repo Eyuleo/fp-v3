@@ -125,9 +125,13 @@
                                 <a href="{{ route('admin.users.show', $user) }}" class="text-blue-600 hover:text-blue-900">View</a>
                                 @if($user->role !== 'admin')
                                     @if($user->is_active)
-                                        <form method="POST" action="{{ route('admin.users.suspend', $user) }}" class="inline" onsubmit="return confirm('Are you sure you want to suspend this user?');">
+                                        <form method="POST" action="{{ route('admin.users.suspend', $user) }}" class="inline" id="suspend-user-{{ $user->id }}-form">
                                             @csrf
-                                            <button type="submit" class="text-red-600 hover:text-red-900">Suspend</button>
+                                            <button type="button"
+                                                    @click="$dispatch('open-confirm-suspend-user-{{ $user->id }}')"
+                                                    class="text-red-600 hover:text-red-900">
+                                                Suspend
+                                            </button>
                                         </form>
                                     @else
                                         <form method="POST" action="{{ route('admin.users.reinstate', $user) }}" class="inline">
@@ -154,4 +158,16 @@
             </div>
         </div>
     </div>
+
+    <!-- Confirm Dialogs -->
+    @foreach($users as $user)
+        @if($user->role !== 'admin' && $user->is_active)
+            <x-confirm-dialog
+                name="suspend-user-{{ $user->id }}"
+                title="Suspend User"
+                message="Are you sure you want to suspend {{ $user->full_name }}? This will revoke their access, hide their listings, and hold pending payouts."
+                confirm-text="Suspend User"
+                on-confirm="document.getElementById('suspend-user-{{ $user->id }}-form').submit()" />
+        @endif
+    @endforeach
 </x-admin-layout>

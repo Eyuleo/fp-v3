@@ -1,4 +1,4 @@
-<div class="space-y-4 max-h-[600px] overflow-y-auto" id="message-thread">
+<div class="message-thread space-y-4 max-h-[600px] overflow-y-auto" id="message-thread">
     @forelse($messages as $message)
         @php
             $isSender = $message->sender_id === auth()->id();

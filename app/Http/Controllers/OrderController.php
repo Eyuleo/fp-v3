@@ -96,6 +96,19 @@ class OrderController extends Controller
     }
 
     /**
+     * Get the current status of an order (for polling).
+     */
+    public function status(Order $order)
+    {
+        $this->authorize('view', $order);
+
+        return response()->json([
+            'status'     => $order->status,
+            'updated_at' => $order->updated_at->toIso8601String(),
+        ]);
+    }
+
+    /**
      * Store a newly created order.
      */
     public function store(StoreOrderRequest $request, PlaceOrderAction $placeOrderAction)

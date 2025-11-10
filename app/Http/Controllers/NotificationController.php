@@ -21,6 +21,26 @@ class NotificationController extends Controller
         return response()->json(['count' => $count]);
     }
 
+    public function recent()
+    {
+        $notifications = auth()->user()
+            ->notifications()
+            ->take(10)
+            ->get()
+            ->map(function ($notification) {
+                return [
+                    'id'         => $notification->id,
+                    'title'      => $notification->data['title'] ?? 'Notification',
+                    'message'    => $notification->data['message'] ?? '',
+                    'action_url' => $notification->data['action_url'] ?? '#',
+                    'read_at'    => $notification->read_at,
+                    'time_ago'   => $notification->created_at->diffForHumans(),
+                ];
+            });
+
+        return response()->json(['notifications' => $notifications]);
+    }
+
     public function markAsRead($id)
     {
         $notification = auth()->user()

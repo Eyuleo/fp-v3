@@ -10,13 +10,23 @@
                         <a href="{{ route('services.edit', $service->slug) }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             Edit
                         </a>
-                        <form method="POST" action="{{ route('services.toggle-active', $service->slug) }}" class="inline">
+                        <form method="POST" action="{{ route('services.toggle-active', $service->slug) }}" class="inline" id="toggle-service-form">
                             @csrf
                             @method('PATCH')
-                            <button type="submit" class="inline-flex items-center px-4 py-2 {{ $service->is_active ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700' }} border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150">
+                            <button type="button"
+                                    @click="$dispatch('open-confirm-toggle-service')"
+                                    class="inline-flex items-center px-4 py-2 {{ $service->is_active ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700' }} border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150">
                                 {{ $service->is_active ? 'Deactivate' : 'Activate' }}
                             </button>
                         </form>
+
+                        <x-confirm-dialog
+                            name="toggle-service"
+                            :title="$service->is_active ? 'Deactivate Service' : 'Activate Service'"
+                            :message="$service->is_active ? 'Are you sure you want to deactivate this service? It will be hidden from search results.' : 'Are you sure you want to activate this service? It will be visible in search results.'"
+                            :confirm-text="$service->is_active ? 'Deactivate' : 'Activate'"
+                            :confirm-class="$service->is_active ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'"
+                            on-confirm="document.getElementById('toggle-service-form').submit()" />
                     </div>
                 @endif
             @endauth
@@ -70,9 +80,16 @@
                                 <div class="mb-6">
                                     <h3 class="text-lg font-semibold mb-2">Sample Work</h3>
                                     @if($service->sampleWorkIsImage())
-                                        <div class="mt-2">
-                                            <img src="{{ $service->sample_work_url }}" alt="{{ $service->title }} sample work" class="max-w-full h-auto rounded-lg shadow-md">
-                                        </div>
+                                        <x-image-gallery-modal :images="[['url' => $service->sample_work_url, 'alt' => $service->title . ' sample work', 'caption' => $service->title]]" :title="$service->title">
+                                            <div class="mt-2 cursor-pointer group relative">
+                                                <img src="{{ $service->sample_work_url }}" alt="{{ $service->title }} sample work" class="max-w-full h-auto rounded-lg shadow-md transition group-hover:opacity-90">
+                                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black bg-opacity-30 rounded-lg">
+                                                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </x-image-gallery-modal>
                                     @else
                                         <p class="text-sm text-gray-600">{{ basename($service->sample_work_path) }}</p>
                                         <p class="text-xs text-gray-500 mt-1">File available upon request</p>

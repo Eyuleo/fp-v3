@@ -30,7 +30,7 @@ return [
 
     'disks'   => [
 
-        'local'   => [
+        'local'       => [
             'driver' => 'local',
             'root'   => storage_path('app/private'),
             'serve'  => true,
@@ -38,7 +38,7 @@ return [
             'report' => false,
         ],
 
-        'private' => [
+        'private'     => [
             'driver' => 'local',
             'root'   => storage_path('app/private'),
             'serve'  => true,
@@ -46,7 +46,47 @@ return [
             'report' => false,
         ],
 
-        'public'  => [
+        'avatars'     => [
+            'driver' => 'local',
+            'root'   => storage_path('app/private/avatars'),
+            'serve'  => true,
+            'throw'  => false,
+            'report' => false,
+        ],
+
+        'portfolios'  => [
+            'driver' => 'local',
+            'root'   => storage_path('app/private/portfolios'),
+            'serve'  => true,
+            'throw'  => false,
+            'report' => false,
+        ],
+
+        'samples'     => [
+            'driver' => 'local',
+            'root'   => storage_path('app/private/samples'),
+            'serve'  => true,
+            'throw'  => false,
+            'report' => false,
+        ],
+
+        'attachments' => [
+            'driver' => 'local',
+            'root'   => storage_path('app/private/attachments'),
+            'serve'  => true,
+            'throw'  => false,
+            'report' => false,
+        ],
+
+        'deliveries'  => [
+            'driver' => 'local',
+            'root'   => storage_path('app/private/deliveries'),
+            'serve'  => true,
+            'throw'  => false,
+            'report' => false,
+        ],
+
+        'public'      => [
             'driver'     => 'local',
             'root'       => storage_path('app/public'),
             'url'        => env('APP_URL') . '/storage',
@@ -55,7 +95,7 @@ return [
             'report'     => false,
         ],
 
-        's3'      => [
+        's3'          => [
             'driver'                  => 's3',
             'key'                     => env('AWS_ACCESS_KEY_ID'),
             'secret'                  => env('AWS_SECRET_ACCESS_KEY'),

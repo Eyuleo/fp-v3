@@ -5,7 +5,35 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-12" x-data="{
+        currentStatus: '{{ $order->status }}',
+        polling: true,
+        init() {
+            // Poll order status every 10 seconds
+            setInterval(() => {
+                if (this.polling && !['completed', 'cancelled'].includes(this.currentStatus)) {
+                    this.checkOrderStatus();
+                }
+            }, 10000);
+        },
+        async checkOrderStatus() {
+            try {
+                const response = await fetch('{{ route('orders.status', $order) }}', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const data = await response.json();
+
+                if (data.status !== this.currentStatus) {
+                    // Status changed, reload page to show updates
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Error checking order status:', error);
+            }
+        }
+    }">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             @if(session('success'))
                 <div class="mb-4 rounded-md bg-green-50 p-4">
@@ -165,9 +193,11 @@
                                                 Accept Order
                                             </button>
                                         </form>
-                                        <form method="POST" action="{{ route('orders.decline', $order) }}" class="inline">
+                                        <form method="POST" action="{{ route('orders.decline', $order) }}" class="inline" id="decline-order-form">
                                             @csrf
-                                            <button type="submit" class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700" onclick="return confirm('Are you sure you want to decline this order?')">
+                                            <button type="button"
+                                                    @click="$dispatch('open-confirm-decline-order')"
+                                                    class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">
                                                 Decline Order
                                             </button>
                                         </form>
@@ -194,9 +224,11 @@
                                     @endif
 
                                     @if($order->isPending() && auth()->id() === $order->client_id)
-                                        <form method="POST" action="{{ route('orders.cancel', $order) }}" class="inline">
+                                        <form method="POST" action="{{ route('orders.cancel', $order) }}" class="inline" id="cancel-order-form">
                                             @csrf
-                                            <button type="submit" class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700" onclick="return confirm('Are you sure you want to cancel this order?')">
+                                            <button type="button"
+                                                    @click="$dispatch('open-confirm-cancel-order')"
+                                                    class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">
                                                 Cancel Order
                                             </button>
                                         </form>
@@ -392,4 +424,23 @@
             </div>
         </div>
     </div>
+
+    <!-- Confirm Dialogs -->
+    @if($order->isPending() && auth()->id() === $order->student_id)
+        <x-confirm-dialog
+            name="decline-order"
+            title="Decline Order"
+            message="Are you sure you want to decline this order? The client will receive a full refund."
+            confirm-text="Decline Order"
+            on-confirm="document.getElementById('decline-order-form').submit()" />
+    @endif
+
+    @if($order->isPending() && auth()->id() === $order->client_id)
+        <x-confirm-dialog
+            name="cancel-order"
+            title="Cancel Order"
+            message="Are you sure you want to cancel this order? You will receive a full refund."
+            confirm-text="Cancel Order"
+            on-confirm="document.getElementById('cancel-order-form').submit()" />
+    @endif
 </x-app-layout>

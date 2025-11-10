@@ -23,19 +23,35 @@
             @endif
 
             <!-- Search and Filter Section -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6" x-data="{ showFilters: {{ request()->hasAny(['category', 'min_price', 'max_price', 'max_delivery_days', 'min_rating', 'sort']) ? 'true' : 'false' }} }">
                 <div class="p-6">
                     <form method="GET" action="{{ route('services.index') }}" class="space-y-4">
                         <!-- Search Bar -->
                         <div class="flex gap-2">
                             <input type="text" name="search" value="{{ request('search') }}" placeholder="Search services..." class="flex-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm">
+                            <button type="button"
+                                    @click="showFilters = !showFilters"
+                                    class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                </svg>
+                                <span x-text="showFilters ? 'Hide Filters' : 'Show Filters'"></span>
+                            </button>
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Search
                             </button>
                         </div>
 
                         <!-- Filters -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div x-show="showFilters"
+                             x-cloak
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 -translate-y-2"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 -translate-y-2"
+                             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <!-- Category Filter -->
                             <div>
                                 <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
@@ -68,7 +84,15 @@
                         </div>
 
                         <!-- Sort and Rating Filter -->
-                        <div class="flex flex-wrap gap-4 items-end">
+                        <div x-show="showFilters"
+                             x-cloak
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 -translate-y-2"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 -translate-y-2"
+                             class="flex flex-wrap gap-4 items-end">
                             <!-- Minimum Rating -->
                             <div class="flex-1 min-w-[200px]">
                                 <label for="min_rating" class="block text-sm font-medium text-gray-700 mb-1">Min Rating</label>
