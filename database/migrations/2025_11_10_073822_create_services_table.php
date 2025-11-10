@@ -1,0 +1,43 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('services', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('student_id')->constrained('users')->onDelete('cascade');
+            $table->string('title', 255);
+            $table->string('slug', 255)->unique();
+            $table->text('description');
+            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->json('tags')->nullable();
+            $table->decimal('price', 10, 2);
+            $table->integer('delivery_days');
+            $table->string('sample_work_path', 255)->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+
+            // Indexes for performance
+            $table->index('student_id');
+            $table->index('category_id');
+            $table->index('is_active');
+            $table->index('slug');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('services');
+    }
+};
