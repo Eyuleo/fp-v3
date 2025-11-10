@@ -88,7 +88,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- My Services -->
-                <a href="{{ route('services.index') }}" class="block bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition">
+                <a href="{{ route('student.services') }}" class="block bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition">
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">

@@ -43,7 +43,7 @@ class CreateCheckoutSessionAction
                 ],
             ],
             'mode'                 => 'payment',
-            'success_url'          => route('orders.show', $order) . '?payment=success',
+            'success_url'          => route('orders.show', $order) . '?payment=success&session_id={CHECKOUT_SESSION_ID}',
             'cancel_url'           => route('orders.show', $order) . '?payment=cancelled',
             'metadata'             => [
                 'order_id'   => $order->id,

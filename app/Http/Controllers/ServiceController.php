@@ -313,4 +313,19 @@ class ServiceController extends Controller
 
         return Storage::disk('private')->response($service->sample_work_path);
     }
+
+    /**
+     * Display student's own services (without search/filters).
+     */
+    public function myServices()
+    {
+        $services = Service::where('student_id', auth()->id())
+            ->with(['category'])
+            ->withCount('orders')
+            ->withAvg('reviews', 'rating')
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
+
+        return view('student.services', compact('services'));
+    }
 }

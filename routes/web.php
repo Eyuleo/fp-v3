@@ -3,9 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return redirect()->route('services.index');
-});
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // Admin Dashboard and Console
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -45,6 +43,8 @@ Route::middleware(['auth', 'verified', 'student'])->prefix('student')->name('stu
     Route::get('/dashboard', function () {
         return view('student.dashboard');
     })->name('dashboard');
+
+    Route::get('/services', [App\Http\Controllers\ServiceController::class, 'myServices'])->name('services');
 });
 
 // Client Dashboard

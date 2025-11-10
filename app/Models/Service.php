@@ -48,6 +48,22 @@ class Service extends Model
     }
 
     /**
+     * Get the orders for the service.
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Get the reviews for the service through orders.
+     */
+    public function reviews()
+    {
+        return $this->hasManyThrough(Review::class, Order::class);
+    }
+
+    /**
      * Check if sample work is an image.
      */
     public function sampleWorkIsImage(): bool

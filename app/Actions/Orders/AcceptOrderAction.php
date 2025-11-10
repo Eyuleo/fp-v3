@@ -16,6 +16,11 @@ class AcceptOrderAction
             throw new \Exception('Only pending orders can be accepted.');
         }
 
+        // Ensure payment has been processed
+        if (! $order->payment) {
+            throw new \Exception('Cannot accept order: Payment has not been processed yet. Please wait a moment and try again.');
+        }
+
         return DB::transaction(function () use ($order) {
             // Calculate delivery date based on service delivery days
             $deliveryDate = now()->addDays($order->service->delivery_days);

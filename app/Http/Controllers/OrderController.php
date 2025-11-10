@@ -49,6 +49,38 @@ class OrderController extends Controller
         // Authorization will be handled by OrderPolicy
         $this->authorize('view', $order);
 
+        // Handle successful payment return from Stripe
+        if (request()->has('payment') && request('payment') === 'success') {
+            $sessionId = request('session_id');
+
+            if ($sessionId && ! $order->payment) {
+                try {
+                    $handleSuccess = new \App\Actions\Payments\HandleCheckoutSuccessAction();
+                    $handleSuccess->execute($order, $sessionId);
+
+                    return redirect()
+                        ->route('orders.show', $order)
+                        ->with('success', 'Payment successful! Your order has been placed.');
+                } catch (\Exception $e) {
+                    \Log::error('Failed to process payment success', [
+                        'order_id' => $order->id,
+                        'error'    => $e->getMessage(),
+                    ]);
+
+                    return redirect()
+                        ->route('orders.show', $order)
+                        ->with('warning', 'Payment received but processing is pending. Please contact support if this persists.');
+                }
+            }
+        }
+
+        // Handle cancelled payment
+        if (request()->has('payment') && request('payment') === 'cancelled') {
+            return redirect()
+                ->route('orders.show', $order)
+                ->with('warning', 'Payment was cancelled. You can try again or contact support.');
+        }
+
         // Load relationships
         $order->load([
             'service',
@@ -56,6 +88,7 @@ class OrderController extends Controller
             'client',
             'messages.sender',
             'review',
+            'payment',
         ]);
 
         // Load dispute if table exists
